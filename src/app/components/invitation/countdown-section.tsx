@@ -30,11 +30,12 @@ function getTimeLeft(): TimeLeft {
   }
 }
 
-function CountdownUnit({ value, label }: { value: number; label: string }) {
+function CountdownUnit({ value, label, isMounted }: { value: number; label: string; isMounted: boolean }) {
   return (
     <div className="flex flex-col items-center gap-2">
       <span className="font-serif text-5xl leading-none text-foreground md:text-7xl">
-        {String(value).padStart(2, "0")}
+        {/* Mostramos 00 hasta que el cliente esté montado para evitar el error de hidratación */}
+        {isMounted ? String(value).padStart(2, "0") : "00"}
       </span>
       <span className="font-sans text-[10px] tracking-[0.3em] text-muted-foreground uppercase">
         {label}
@@ -49,10 +50,12 @@ function Separator() {
 
 export function CountdownSection() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(getTimeLeft())
+  const [isMounted, setIsMounted] = useState(false) // Nuevo estado para controlar la hidratación
   const ref = useRef<HTMLElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   useEffect(() => {
+    setIsMounted(true) // Marcamos como montado al cargar en el navegador
     const timer = setInterval(() => {
       setTimeLeft(getTimeLeft())
     }, 1000)
@@ -76,16 +79,15 @@ export function CountdownSection() {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        <CountdownUnit value={timeLeft.dias} label="Dias" />
+        <CountdownUnit value={timeLeft.dias} label="Dias" isMounted={isMounted} />
         <Separator />
-        <CountdownUnit value={timeLeft.horas} label="Horas" />
+        <CountdownUnit value={timeLeft.horas} label="Horas" isMounted={isMounted} />
         <Separator />
-        <CountdownUnit value={timeLeft.minutos} label="Min" />
+        <CountdownUnit value={timeLeft.minutos} label="Min" isMounted={isMounted} />
         <Separator />
-        <CountdownUnit value={timeLeft.segundos} label="Seg" />
+        <CountdownUnit value={timeLeft.segundos} label="Seg" isMounted={isMounted} />
       </motion.div>
 
-      {/* Decorative line */}
       <motion.div
         className="h-12 w-px bg-border"
         initial={{ scaleY: 0 }}
