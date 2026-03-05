@@ -37,7 +37,7 @@ export function GallerySection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   return (
-    <section ref={ref} className="bg-[#f8f5f0] px-6 py-24 md:py-32">
+<section ref={ref} className="bg-[#f8f5f0] px-12 md:px-40 py-24 md:py-32">
       <motion.p
         className="mb-16 text-center font-sans text-[10px] tracking-[0.5em] text-muted-foreground uppercase"
         initial={{ opacity: 0, y: 20 }}
